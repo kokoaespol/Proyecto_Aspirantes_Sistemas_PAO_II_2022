@@ -19,50 +19,51 @@
   [size]
   (vec (take size (repeat 0))))
 
-
 (defn- start-loop
-  [instructions ip cell memory]
+  [instructions ip cell memory loop-stack]
   [(if (zero? (nth memory cell))
      (loop [p ip]
        (if (= (nth instructions p) :eloop)
          p
          (recur (inc p))))
-     (inc ip)) cell memory])
-
+     (inc ip)) 
+   cell 
+   memory 
+   loop-stack])
 
 (defn- end-loop
-  [instructions ip cell memory]
+  [ip cell memory loop-stack]
   [(if (zero? (nth memory cell))
      (inc ip)
-     (loop [p ip]
-       (if (= (nth instructions p) :sloop)
-         p
-         (recur (dec p))))) cell memory]
-  )
+     (peek loop-stack))
+   cell
+   memory
+   (pop loop-stack)])
 
 (defn run
   "Executes a brainfuck program"
   [instructions]
-  (loop [ip 0 cell 0 memory (init-memory 15)]
-    (println "memory" memory)
-    (println "")
-    (println "ip" ip)
-    (println "cell" cell)
+  (loop [ip 0 cell 0 memory (init-memory 15) loop-stack []]
+    ;; (println "memory" memory)
+    ;; (println "stack" loop-stack)
+    ;; (println "")
+    ;; (println "ip" ip)
+    ;; (println "cell" cell)
     (when (< ip (count instructions))
-      (let [[new-ip new-cell new-memory] (case (nth instructions ip)
-                                           :inc [(inc ip) cell (assoc memory cell (inc (nth memory cell)))]
-                                           :dec [(inc ip) cell (assoc memory cell (dec (nth memory cell)))]
-                                           :next [(inc ip) (inc cell) memory]
-                                           :prev [(inc ip) (dec cell) memory]
-                                           :sloop (start-loop instructions ip cell memory)
-                                           :eloop (end-loop instructions ip cell memory)
-                                           :putc (do
-                                                   (print (char (nth memory cell)))
-                                                   [(inc ip) cell memory])
-                                           [(inc ip) cell memory])]
-        (recur new-ip new-cell new-memory)))))
+      (let [[new-ip new-cell new-memory new-loop-stack] (case (nth instructions ip)
+                                                          :inc [(inc ip) cell (assoc memory cell (inc (nth memory cell))) loop-stack]
+                                                          :dec [(inc ip) cell (assoc memory cell (dec (nth memory cell))) loop-stack]
+                                                          :next [(inc ip) (inc cell) memory loop-stack]
+                                                          :prev [(inc ip) (dec cell) memory loop-stack]
+                                                          :sloop (start-loop instructions ip cell memory (conj loop-stack ip))
+                                                          :eloop (end-loop ip cell memory loop-stack)
+                                                          :putc (do
+                                                                  (print (char (nth memory cell)))
+                                                                  [(inc ip) cell memory loop-stack])
+                                                          [(inc ip) cell memory loop-stack])]
+        (recur new-ip new-cell new-memory new-loop-stack)))))
 
-;; Hello World! (!works)
-;; (run (parse "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++."))
+(comment ;; Hello World! (works)
+  (run (parse "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++."))
 ;; Hello World! (works)
-;; (run (parse "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."))
+  (run (parse "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.")))
