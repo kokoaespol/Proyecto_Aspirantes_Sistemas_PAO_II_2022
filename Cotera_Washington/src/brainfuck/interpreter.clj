@@ -63,7 +63,7 @@
                                                           [(inc ip) cell memory loop-stack])]
         (recur new-ip new-cell new-memory new-loop-stack)))))
 
-(comment ;; Hello World! (works)
+(comment 
+  ;; Hello World! (works)
   (run (parse "++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++."))
-;; Hello World! (works)
   (run (parse "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.")))
