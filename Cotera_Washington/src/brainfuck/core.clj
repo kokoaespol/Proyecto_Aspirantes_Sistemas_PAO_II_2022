@@ -1,8 +1,7 @@
 (ns brainfuck.core
-  (:gen-class))
+  (:gen-class) 
+  (:require [brainfuck.interpreter :refer [parse run]])
+  )
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  (println "Hello, World!"))
-
+(defn -main [& args]
+  (println (run (parse (str args)))))
