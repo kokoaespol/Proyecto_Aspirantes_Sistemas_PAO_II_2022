@@ -26,9 +26,9 @@ You can also pass the path to a file containing the Brainfuck code to the progra
 2. Open a terminal and navigate to the project directory.
 3. Run the following command to execute the program:
 
-    $ lein run <input>
+    $ lein run input
 
-Where <input> is either the Brainfuck code string or the path to the file containing the code.
+Where ***input*** is either the Brainfuck code string or the path to the file containing the code.
 
 ## License
 
